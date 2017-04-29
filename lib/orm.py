@@ -90,6 +90,8 @@ def set_sequence_value(conn, table, value):
     # works only under postgres for the moment
     if conn[TYPE] == 'postgresql':
         q = 'ALTER SEQUENCE {0}_id_seq RESTART WITH {1}'.format(table, value)
+    elif conn[TYPE] == 'mysql':
+        q = 'ALTER TABLE {0} auto_increment={1}'.format(table,value)
     try:
         execute(conn, q)
     except postgresql.ProgrammingError:
