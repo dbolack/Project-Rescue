@@ -19,9 +19,10 @@ Al the IDs and primary keys will be kept original. The new IDs will be bumped
 from the setting value `relative.new_sequence` described in 'Configuration
 procedure' section of this document.
 
-The plugin is actually only compatible to migrate from MySQL to PostgreSQL,
-but after a little few adjustments in the `lib/orm.py` file, it should work
-like a charm. Feel free to contribute that fix if you especially need this.
+The plugin is actually only compatible to migrate from MySQL to PostgreSQL
+vice versa, but after a little few adjustments in the `lib/orm.py` file,
+it should work like a charm with other kinds of databases.
+Feel free to contribute that fix if you especially need this.
 
 
 ### License ###
