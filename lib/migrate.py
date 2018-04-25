@@ -11,9 +11,12 @@ def init():
         ssh = paramiko.SSHClient() 
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         try:
+            port = config['src']['ssh'].get('port', 22)
             ssh.connect(config['src']['ssh']['host'],
                         username=config['src']['ssh']['user'],
-                        password=config['src']['ssh']['pass'])
+                        password=config['src']['ssh']['pass'],
+                        port=port,
+            )
         except paramiko.ssh_exception.AuthenticationException:
             print("ssh authentication to src failed.")
             sys.exit(1)
