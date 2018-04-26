@@ -13,14 +13,19 @@ CONN = 1
 def connect(cfg):
     res = None
     if cfg['type'] == 'postgresql':
+        port = cfg.get('port', 5432)
         res = ('postgresql', postgresql.connect((
-            'dbname={0} host={1} user={2} password={3}'
-                .format(cfg['name'], cfg['host'], cfg['user'], cfg['pass'])
+            'dbname={0} host={1} user={2} password={3} port={4}'
+                .format(cfg['name'], cfg['host'], cfg['user'], cfg['pass'], port)
         )))
     if cfg['type'] == 'mysql':
+        port = cfg.get('port', 3306)
+        charset = cfg.get('charset', '')
         res = ('mysql', mysql.connect(
             host=cfg['host'], user=cfg['user'],
             passwd=cfg['pass'], db=cfg['name'],
+            port=port,
+            charset=charset,
         ))
     if config['commit_at_each_entry']:
         res[CONN].autocommit = True

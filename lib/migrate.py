@@ -1,3 +1,4 @@
+import os.path
 from . import orm
 from .config import config
 from time import time
@@ -11,9 +12,12 @@ def init():
         ssh = paramiko.SSHClient() 
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         try:
+            port = config['src']['ssh'].get('port', 22)
             ssh.connect(config['src']['ssh']['host'],
                         username=config['src']['ssh']['user'],
-                        password=config['src']['ssh']['pass'])
+                        password=config['src']['ssh']['pass'],
+                        port=port,
+            )
         except paramiko.ssh_exception.AuthenticationException:
             print("ssh authentication to src failed.")
             sys.exit(1)
@@ -75,7 +79,10 @@ def fetch(table, data, o2m={}, m2o={}, m2m={}, polymorphic={},
     if dst: return dst, False
     dst = dict(data)
     for s in stub:
-        del dst[s]
+        try:
+            del dst[s]
+        except KeyError:
+            pass
     for _from, _func in translate.items():
         if _from not in data:
             dst[_from] = _func(data)
@@ -589,8 +596,25 @@ def attachment(src):
     if not callback[AFFECTED]: return callback[ENTITY]
     print("downloading attachment #{0} from src".format(
         callback[ENTITY]['id']))
-    sftp.get(config['dst']['path']+'/'+callback[ENTITY]['disk_filename'],
-             config['src']['ssh']['path']+'/'+callback[ENTITY]['disk_filename'])
+
+    if callback[ENTITY]['disk_directory']:
+        os.makedirs(os.path.join(config['dst']['path'],
+                                 callback[ENTITY]['disk_directory']),
+                    exist_ok=True)
+        file_src = os.path.join(config['src']['ssh']['path'],
+                                callback[ENTITY]['disk_directory'],
+                                callback[ENTITY]['disk_filename'])
+        file_dst = os.path.join(config['dst']['path'],
+                                callback[ENTITY]['disk_directory'],
+                                callback[ENTITY]['disk_filename'])
+
+    else:
+        file_src = os.path.join(config['src']['ssh']['path'],
+                                callback[ENTITY]['disk_filename'])
+        file_dst = os.path.join(config['dst']['path'],
+                                callback[ENTITY]['disk_filename'])
+
+    sftp.get(file_src, file_dst)
     return callback[ENTITY]
 
 def comment(src):
