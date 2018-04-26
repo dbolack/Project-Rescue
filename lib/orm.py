@@ -20,10 +20,12 @@ def connect(cfg):
         )))
     if cfg['type'] == 'mysql':
         port = cfg.get('port', 3306)
+        charset = cfg.get('charset', '')
         res = ('mysql', mysql.connect(
             host=cfg['host'], user=cfg['user'],
             passwd=cfg['pass'], db=cfg['name'],
             port=port,
+            charset=charset,
         ))
     if config['commit_at_each_entry']:
         res[CONN].autocommit = True

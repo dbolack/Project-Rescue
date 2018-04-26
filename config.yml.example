@@ -2,8 +2,10 @@ src:
     type: mysql
     name: redmine_official
     host: localhost
+    port: 3306
     user: root
     pass: test
+    charset: utf8
     ssh:
         host: 192.168.0.1
         user: test
@@ -14,6 +16,7 @@ dst:
     type: postgresql
     name: redmine_default
     host: 127.0.0.1
+    port: 5432
     user: postgres
     pass: test
     path: /var/lib/redmine/default/files/
