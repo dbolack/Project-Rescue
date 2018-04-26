@@ -1,3 +1,4 @@
+import os.path
 from . import orm
 from .config import config
 from time import time
@@ -592,8 +593,25 @@ def attachment(src):
     if not callback[AFFECTED]: return callback[ENTITY]
     print("downloading attachment #{0} from src".format(
         callback[ENTITY]['id']))
-    sftp.get(config['dst']['path']+'/'+callback[ENTITY]['disk_filename'],
-             config['src']['ssh']['path']+'/'+callback[ENTITY]['disk_filename'])
+
+    if callback[ENTITY]['disk_directory']:
+        os.makedirs(os.path.join(config['dst']['path'],
+                                 callback[ENTITY]['disk_directory']),
+                    exist_ok=True)
+        file_src = os.path.join(config['src']['ssh']['path'],
+                                callback[ENTITY]['disk_directory'],
+                                callback[ENTITY]['disk_filename'])
+        file_dst = os.path.join(config['dst']['path'],
+                                callback[ENTITY]['disk_directory'],
+                                callback[ENTITY]['disk_filename'])
+
+    else:
+        file_src = os.path.join(config['src']['ssh']['path'],
+                                callback[ENTITY]['disk_filename'])
+        file_dst = os.path.join(config['dst']['path'],
+                                callback[ENTITY]['disk_filename'])
+
+    sftp.get(file_src, file_dst)
     return callback[ENTITY]
 
 def comment(src):
