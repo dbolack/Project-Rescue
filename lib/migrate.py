@@ -79,7 +79,10 @@ def fetch(table, data, o2m={}, m2o={}, m2m={}, polymorphic={},
     if dst: return dst, False
     dst = dict(data)
     for s in stub:
-        del dst[s]
+        try:
+            del dst[s]
+        except KeyError:
+            pass
     for _from, _func in translate.items():
         if _from not in data:
             dst[_from] = _func(data)
